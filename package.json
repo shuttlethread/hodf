@@ -1,0 +1,32 @@
+{
+  "name": "hodf",
+  "version": "0.1.0",
+  "description": "Hands-on-dataframe: Handsontable wrapper to make data.frame widget",
+  "main": "./lib/index.js",
+  "homepage": "https://github.com/shuttlethread/hodf",
+  "dependencies": {
+    "handsontable": "^0.34.5",
+    "jquery": "^3.2.1"
+  },
+  "maintainers": [
+    {
+      "name": "Jamie Lentin",
+      "email": "jamie.lentin@shuttlethread.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shuttlethread/hodf"
+  },
+  "devDependencies": {
+    "istanbul": "^0.4.5",
+    "jslint": "^0.12.0",
+    "tape": "^4.9.2"
+  },
+  "scripts": {
+    "coverage": "istanbul cover tape ./tests/test_*.js",
+    "lint": "jslint */*.js",
+    "test": "tape ./tests/test_*.js && jslint */*.js"
+  },
+  "license": "MIT"
+}
