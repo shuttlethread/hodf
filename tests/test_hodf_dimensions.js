@@ -7,7 +7,7 @@ var get_dimension = require('../lib/hodf_dimensions.js').get_dimension;
 test('ListDimension', function (t) {
     var d;
 
-    d = get_dimension({type: 'list', values: [['l0', 'Item 0'], ['l1', 'Item 1']]});
+    d = get_dimension({type: 'list', values: [{name: 'l0', title: 'Item 0'}, {name: 'l1', title: 'Item 1'}]});
     t.deepEqual(d.headers(), ['l0', 'l1'], 'Got headers');
     t.deepEqual(d.headerHTML(), ['Item 0', 'Item 1'], 'Got header HTML (i.e. pretty titles');
     t.deepEqual(d.minCount(), 2, "Count same as length of values");
@@ -46,7 +46,7 @@ test('YearDimension', function (t) {
     t.deepEqual(yd.minCount(), 5, "mincount/maxcount equal");
     t.deepEqual(yd.maxCount(), 5, "mincount/maxcount equal");
 
-    yd = get_dimension({type: 'year', min: 1990, max: 1993, initial: ['woo', 'yay']});
+    yd = get_dimension({type: 'year', min: 1990, max: 1993, initial: [{name: 'woo'}, {name: 'yay'}]});
     t.deepEqual(
         yd.headers(),
         ['woo', 'yay', '1990', '1991', '1992', '1993'],
@@ -55,7 +55,7 @@ test('YearDimension', function (t) {
     t.deepEqual(yd.minCount(), 6, "mincount/maxcount equal");
     t.deepEqual(yd.maxCount(), 6, "mincount/maxcount equal");
 
-    yd = get_dimension({type: 'year', min: 1990, max: 1993, initial: ['woo', 'yay']}, ['woo', 'yay', '2000', '2001', '2004']);
+    yd = get_dimension({type: 'year', min: 1990, max: 1993, initial: [{name: 'woo'}, {name: 'yay'}]}, ['woo', 'yay', '2000', '2001', '2004']);
     t.deepEqual(
         yd.headers(),
         ['woo', 'yay', '2000', '2001', '2002', '2003', '2004'],
@@ -64,7 +64,7 @@ test('YearDimension', function (t) {
     t.deepEqual(yd.minCount(), 7, "mincount/maxcount equal");
     t.deepEqual(yd.maxCount(), 7, "mincount/maxcount equal");
 
-    yd = get_dimension({type: 'year', min: 1990, max: 1993, initial: ['woo', 'yay']}, ['parp', '2000', '2001', '2004']);
+    yd = get_dimension({type: 'year', min: 1990, max: 1993, initial: [{name: 'woo'}, {name: 'yay'}]}, ['parp', '2000', '2001', '2004']);
     t.deepEqual(
         yd.headers(),
         ['woo', 'yay', '2000', '2001', '2002', '2003', '2004'],
@@ -73,7 +73,7 @@ test('YearDimension', function (t) {
     t.deepEqual(yd.minCount(), 7, "mincount/maxcount equal");
     t.deepEqual(yd.maxCount(), 7, "mincount/maxcount equal");
 
-    yd = get_dimension({type: 'year', min: 1990, max: 1993, initial: ['woo', 'yay'], prefix: ["y_", "Year "]}, ['parp', 'y_2000', 'y_2001', 'y_2004']);
+    yd = get_dimension({type: 'year', min: 1990, max: 1993, initial: [{name: 'woo'}, {name: 'yay'}], prefix: {name: "y_", title: "Year "}}, ['parp', 'y_2000', 'y_2001', 'y_2004']);
     t.deepEqual(
         yd.headers(),
         ['woo', 'yay', 'y_2000', 'y_2001', 'y_2002', 'y_2003', 'y_2004'],
