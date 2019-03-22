@@ -27,6 +27,18 @@ test('df_to_aofa', function (t) {
         [ null, null, null ],
     ], "Converted to vertical aofa");
 
+    t.deepEqual(hot_utils.df_to_aofa({
+        _headings: { fields: ['a', 'c'], values: [1, 2, 3] },
+        a: [11, 12, 13],
+        c: [21, 0, 23],
+    }, ['a', 'b', 'c'], [0, 1, 2, 3, 4], 'horizontal'), [
+        [ null, null, null ],
+        [   11, null,   21 ],
+        [   12, null,    0 ],
+        [   13, null,   23 ],
+        [ null, null, null ],
+    ], "Zeros are preserved");
+
     t.end();
 });
 
