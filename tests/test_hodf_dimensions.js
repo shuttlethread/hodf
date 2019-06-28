@@ -9,7 +9,7 @@ test('ListDimension', function (t) {
 
     d = get_dimension({type: 'list', values: [{name: 'l0', title: 'Item 0'}, {name: 'l1', title: 'Item 1'}]});
     t.deepEqual(d.headers(), ['l0', 'l1'], 'Got headers');
-    t.deepEqual(d.headerHTML(), ['Item 0', 'Item 1'], 'Got header HTML (i.e. pretty titles');
+    t.deepEqual(d.headerHTML(), ['<span>Item 0</span>', '<span>Item 1</span>'], 'Got header HTML (i.e. pretty titles');
     t.deepEqual(d.minCount(), 2, "Count same as length of values");
     t.deepEqual(d.maxCount(), 2, "Count same as length of values");
 

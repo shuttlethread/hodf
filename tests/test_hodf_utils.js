@@ -70,3 +70,20 @@ test('aofa_to_df', function (t) {
 
     t.end();
 });
+
+test('tlate', function (t) {
+    t.deepEqual(hot_utils.tlate(undefined, "span", "en"), "", "undefined results in empty string (no tag)");
+    t.deepEqual(hot_utils.tlate(null, "span", "en"), "", "null results in empty string (no tag)");
+
+    t.deepEqual(hot_utils.tlate("hello", "span", "en"), "<span>hello</span>", "raw string has tag (but no lang) added");
+    t.deepEqual(hot_utils.tlate("hello", "spam", "es"), "<spam>hello</spam>", "raw string has tag (but no lang) added");
+    t.deepEqual(hot_utils.tlate("hello <a>there</a>", "spam", "es"), "<spam>hello <a>there</a></spam>", "HTML not escaped");
+
+    t.deepEqual(hot_utils.tlate({"es": "heles", "en": "helen"}, "s", "es"), '<s lang="es">heles</s>', "Chose spanish");
+    t.deepEqual(hot_utils.tlate({"es": "heles", "en": "helen"}, "s", "en"), '<s lang="en">helen</s>', "Chose english");
+    t.deepEqual(hot_utils.tlate({"es": "heles", "en": "helen"}, "s", "is"), '<s lang="en">helen</s>', "No icelandic, fell back to english");
+
+    t.deepEqual(hot_utils.tlate({"es": "heles", "en": "helen"}, "s", "*"), '<s lang="es">heles</s>\n<s lang="en">helen</s>', "Chose all the languages");
+
+    t.end();
+});
