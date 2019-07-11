@@ -1,6 +1,29 @@
 # HODF: Hands-on-dataframe
 
-A wrapper around [handsontable](https://handsontable.com/) for collecting data.frame objects
+A wrapper around [handsontable](https://handsontable.com/) spreadsheet for collecting data.frame objects with a dynamic number of columns / rows.
+
+![hodfr screenshot](screenshot.png)
+
+## Installation / Quick start
+
+The package can be installed via. Yarn / NPM:
+
+    npm install shuttlethread/hodf
+
+Then you can create the hodf element with:
+
+    var Hodf = require('hodf');
+
+    var h = new Hodataframe(
+        template,  // Describes requested data, see later
+        containing_el,  // HTML element to add HODF to
+        (initial_data || {}),  // Initial data frame to populate
+    );
+
+Finally you can get the content using:
+
+    console.log(h.getDataFrame());  // R data.frame-like format
+    console.log(h.getAofA());  // Array-of-arrays format
 
 ## References
 
