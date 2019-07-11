@@ -79,9 +79,14 @@ test('RangeDimension', function (t) {
     fh = new FakeHot(d.headers());
     t.deepEqual(d.headers(), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'], 'Got initial headers');
 
+    d.update(new FakeParams(1, 9), fh, {target: { id: 'max'}});
+    t.deepEqual(d.headers(), ['1', '2', '3', '4', '5', '6', '7', '8', '9'], 'Removed one');
+    t.deepEqual(fh.getColHeader(), ['1', '2', '3', '4', '5', '6', '7', '8', '9'], 'HOT columns updated');
+    t.deepEqual(fh.getSettings().colHeaders, ['1', '2', '3', '4', '5', '6', '7', '8', '9'], 'HOT column labels updated');
+
     d.update(new FakeParams(1, 13), fh, {target: { id: 'max'}});
     t.deepEqual(d.headers(), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'], 'Added some');
-    t.deepEqual(fh.getColHeader(), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '__new', '__new', '__new'], 'HOT columns added');
+    t.deepEqual(fh.getColHeader(), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '__new', '__new', '__new', '__new'], 'HOT columns added');
     t.deepEqual(fh.getSettings().colHeaders, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'], 'HOT column labels updated');
 
     t.end();
