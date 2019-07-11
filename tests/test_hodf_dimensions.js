@@ -1,5 +1,5 @@
 "use strict";
-/*jslint todo: true, regexp: true */
+/*jslint todo: true, regexp: true, plusplus: true */
 var test = require('tape');
 
 var get_dimension = require('../lib/hodf_dimensions.js').get_dimension;
@@ -12,6 +12,77 @@ test('ListDimension', function (t) {
     t.deepEqual(d.headerHTML(), ['<span>Item 0</span>', '<span>Item 1</span>'], 'Got header HTML (i.e. pretty titles');
     t.deepEqual(d.minCount(), 2, "Count same as length of values");
     t.deepEqual(d.maxCount(), 2, "Count same as length of values");
+
+    t.end();
+});
+
+test('RangeDimension', function (t) {
+    var d, fh;
+
+    function FakeHot(init_headers) {
+        var h = init_headers, settings = { colHeaders: init_headers };
+
+        this.getColHeader = function () {
+            return h;
+        };
+
+        this.getSettings = function () {
+            return settings;
+        };
+
+        this.alter = function (action, index, amount) {
+            var i;
+
+            if (Array.isArray(index)) {
+                // Do each alter in turn
+                for (i = 0; i < index.length; i++) {
+                    this.alter(action, index[i][0], index[i][1]);
+                }
+                return;
+            }
+            if (amount && amount !== 1) {
+                throw new Error("amount not supported: " + amount);
+            }
+
+            if (action === 'insert_col') {
+                h.splice(index, 0, '__new');
+            } else if (action === 'remove_col') {
+                h.splice(index, 1);
+            } else {
+                throw new Error("Unknown action " + action);
+            }
+        };
+
+        this.updateSettings = function (new_settings) {
+            Object.keys(new_settings).forEach(function (k) {
+                if (k === 'colHeaders' && h.length !== new_settings[k].length) {
+                    throw new Error("Mismatch columns/headers " + h + "/" + new_settings[k]);
+                }
+                settings[k] = new_settings[k];
+            });
+        };
+    }
+
+    function FakeParams(min, max) {
+        this.querySelector = function (sel) {
+            if (sel === "input[name=min]") {
+                return { id: "min", value: min, min: 0 };
+            }
+            if (sel === "input[name=max]") {
+                return { id: "max", value: max, min: 100 };
+            }
+            throw new Error("Unknown selector " + sel);
+        };
+    }
+
+    d = get_dimension({type: 'bins', max: 10});
+    fh = new FakeHot(d.headers());
+    t.deepEqual(d.headers(), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'], 'Got initial headers');
+
+    d.update(new FakeParams(1, 13), fh, {target: { id: 'max'}});
+    t.deepEqual(d.headers(), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'], 'Added some');
+    t.deepEqual(fh.getColHeader(), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '__new', '__new', '__new'], 'HOT columns added');
+    t.deepEqual(fh.getSettings().colHeaders, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'], 'HOT column labels updated');
 
     t.end();
 });
