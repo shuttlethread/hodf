@@ -10,9 +10,14 @@ The package can be installed via. Yarn / NPM:
 
     npm install shuttlethread/hodf
 
+Include the handsontable CSS in your page, either:
+
+* Include ``node_modules/handsontable/dist/handsontable.min.css``
+* Use a CDN, e.g. ``<link href="https://cdn.jsdelivr.net/npm/handsontable@7.1.0/dist/handsontable.full.min.css" rel="stylesheet" media="screen">``
+
 Then you can create the hodf element with:
 
-    var Hodf = require('hodf');
+    var Hodataframe = require('hodf');
 
     var h = new Hodataframe(
         template,  // Describes requested data, see later
