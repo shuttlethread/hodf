@@ -100,6 +100,29 @@ Special case of range dimension. Min is hard-coded to 1.
 {"type": "bins", "max": 10}
 ```
 
+### Content type
+
+For fields only, you can specify the type of value it can contain with ``content``. For example
+
+```json
+{"type": "range", "min": 100, "max": 200, "content": "numeric"}
+```
+
+... or ...
+
+```json
+[
+    {"name": "species", "title": "Species", "content": ["Cow", "Pig", "Duck"]},
+    {"name": "count", "title": "Count", "content": "numeric"}
+],
+```
+
+Valid options are:-
+
+* An array of possible values, in which case a dropdown will appear
+* The name of a [handsontable validator alias](https://handsontable.com/docs/7.1.0/demo-data-validation.html), i.e. ``date``, ``numeric``, ``time``.
+* A handsontable cell type object
+
 ## Additional optional template fields
 
 Besides fields/values, a template can also contain the following fields:

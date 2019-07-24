@@ -12,6 +12,18 @@ test('ListDimension', function (t) {
     t.deepEqual(d.headerHTML(), ['<span>Item 0</span>', '<span>Item 1</span>'], 'Got header HTML (i.e. pretty titles');
     t.deepEqual(d.minCount(), 2, "Count same as length of values");
     t.deepEqual(d.maxCount(), 2, "Count same as length of values");
+    t.deepEqual(d.dataProperties(), [{}, {}], "No data properties by default");
+
+    d = get_dimension({type: 'list', values: [
+        {name: 'l0', title: 'Item 0', content: 'numeric', allowInvalid: false},
+        {name: 'l1', title: 'Item 1', content: ['a', 'b', 'c']},
+        {name: 'l1', title: 'Item 1', content: 'camel', allowInvalid: false},
+    ]});
+    t.deepEqual(d.dataProperties(), [
+        {type: 'numeric', allowInvalid: false},
+        {type: 'dropdown', source: [ 'a', 'b', 'c' ]},
+        {type: 'camel', allowInvalid: false},
+    ], "Data properties set by type, unknown types passed through");
 
     t.end();
 });
@@ -78,6 +90,7 @@ test('RangeDimension', function (t) {
     d = get_dimension({type: 'bins', max: 10});
     fh = new FakeHot(d.headers());
     t.deepEqual(d.headers(), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'], 'Got initial headers');
+    t.deepEqual(d.dataProperties(), [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}], "Got empty properties, one per row");
 
     d.update(new FakeParams(1, 9), fh, {target: { id: 'max'}});
     t.deepEqual(d.headers(), ['1', '2', '3', '4', '5', '6', '7', '8', '9'], 'Removed one');
@@ -88,6 +101,11 @@ test('RangeDimension', function (t) {
     t.deepEqual(d.headers(), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'], 'Added some');
     t.deepEqual(fh.getColHeader(), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '__new', '__new', '__new', '__new'], 'HOT columns added');
     t.deepEqual(fh.getSettings().colHeaders, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'], 'HOT column labels updated');
+
+    d = get_dimension({type: 'bins', max: 3, content: "numeric"});
+    fh = new FakeHot(d.headers());
+    t.deepEqual(d.headers(), ['1', '2', '3'], 'Got initial headers');
+    t.deepEqual(d.dataProperties(), [{type: "numeric", allowInvalid: false}, {type: "numeric", allowInvalid: false}, {type: "numeric", allowInvalid: false}], "All rows numeric");
 
     t.end();
 });
