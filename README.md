@@ -33,8 +33,10 @@ Finally you can get the content using:
 ## Templates
 
 A template must contain a ``fields`` and ``values`` specification, which detail
-how data.frame columns and rows are formed, respectively. For example, the
-following:
+how data.frame columns and rows are formed, respectively.
+
+Both should be a dimension object or array of dimension objects that describe
+contained data. For example, the following:
 
 ```json
 {
@@ -56,23 +58,27 @@ following:
 }
 ```
 
-### List dimension
+The various types of dimensions are described below.
 
-Static lists of fields, for example:
+### Static dimension
+
+A fixed single dimension that will always be present in the data frame. For
+example:
 
 ```json
-[
     {"name": "species", "title": "Species"},
-    {"name": "count", "title": "Count"}
-],
 ```
 
-The user will not be able to add/remove rows/columns.
+The title can contain translations, e.g:
+
+```json
+    {"name": "item_2", "title": {'en': 'Item 2', 'ge': 'ნივთი 2'}},
+```
 
 ### Range dimension
 
 The columns/rows will be a range of numeric values, for which users get to
-select min/max value.
+select min/max value:
 
 ```json
 {"type": "range", "min": 100, "max": 200}

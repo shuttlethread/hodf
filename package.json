@@ -5,8 +5,8 @@
   "main": "./lib/index.js",
   "homepage": "https://github.com/shuttlethread/hodf",
   "dependencies": {
-    "handsontable": "^0.34.5",
-    "jquery": "^3.2.1"
+    "jquery": "^3.2.1",
+    "handsontable": "^6.2.2"
   },
   "maintainers": [
     {
