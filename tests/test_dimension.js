@@ -5,10 +5,8 @@ var test = require('tape');
 var Dimension = require('../lib/dimension.js');
 var sequence = require('../lib/sequence.js').sequence;
 
-function FakeParams(min, max) {
-    this.param_els = [
-        [{ name: 'min', value: min, min: 0 }, { name: 'max', value: max, min: 100 }],
-    ];
+function FakeParams() {
+    var param_els = Array.from(arguments);
 
     // Find first fake input in (p_el) that matches (name)
     function by_name(p_el, name) {
@@ -22,7 +20,7 @@ function FakeParams(min, max) {
     }
 
     // Fake being the parent node by providing childNodes & querySelector to get elements within each
-    this.childNodes = this.param_els.map(function (p_el) {
+    this.childNodes = param_els.map(function (p_el) {
         return {
             querySelector: function (sel) {
                 var m = sel.match("input\\[name=(.*)\\]");
@@ -37,7 +35,7 @@ function FakeParams(min, max) {
 
     // Find item by name so we can claim that was the target
     this.target = function (idx, name) {
-        return by_name(this.param_els[idx], name);
+        return by_name(param_els[idx], name);
     };
 }
 
@@ -79,7 +77,7 @@ test('Dimension:SingleDimension', function (t) {
     d.update_init(['l0', 'l2', 'l3', 'l99']);
     t.deepEqual(d.headers(), ['l0', 'l1', 'l2'], "update_init() does nothing");
 
-    fp = new FakeParams(10, 17);
+    fp = new FakeParams([{ name: 'min', value: 10, min: 0 }, { name: 'max', value: 17, min: 100 }]);
     t.deepEqual(d.update(fp, fp.target(0, 'max')), [], "update() returns no actions");
     t.deepEqual(d.headers(), ['l0', 'l1', 'l2'], "Headers still the same post update()");
 
@@ -147,40 +145,40 @@ test('Dimension:RangeDimension', function (t) {
 
     d = new Dimension([{ type: 'range', min: 10, max: 20 }]);
     t.deepEqual(d.headers(), sequence(10, 20), "Start with 10..20");
-    fp = new FakeParams(10, 17);
+    fp = new FakeParams([{ name: 'min', value: 10, min: 0 }, { name: 'max', value: 17, min: 100 }]);
     t.deepEqual(d.update(fp, fp.target(0, 'max')), [
         { name: 'remove', idx: 8, count: 3 },
     ], "Delete last 3");
     t.deepEqual(d.headers(), sequence(10, 17), "Headers now 10..17");
 
-    fp = new FakeParams(7, 19);
+    fp = new FakeParams([{ name: 'min', value: 7, min: 0 }, { name: 'max', value: 19, min: 100 }]);
     t.deepEqual(d.update(fp, fp.target(0, 'max')), [
         { name: 'insert', idx: 0, count: 3 },
         { name: 'insert', idx: 11, count: 2 },
     ], "Add to beginning and end");
     t.deepEqual(d.headers(), sequence(7, 19), "Headers now 7..19");
 
-    fp = new FakeParams(7, 5);
+    fp = new FakeParams([{ name: 'min', value: 7, min: 0 }, { name: 'max', value: 5, min: 100 }]);
     t.deepEqual(d.update(fp, fp.target(0, 'max')), [
         { name: 'insert', idx: 0, count: 2 },  // 7 down to 5
         { name: 'remove', idx: 1, count: 14 },  // NB: This is trying to remove nonexistant headers, assuming counts match
     ], "Throw away all existing entries");
     t.deepEqual(d.headers(), sequence(5, 5), "Headers now 5...5 (min adjusted to match max)");
 
-    fp = new FakeParams(6, 5);
+    fp = new FakeParams([{ name: 'min', value: 6, min: 0 }, { name: 'max', value: 5, min: 100 }]);
     t.deepEqual(d.update(fp, fp.target(0, 'min')), [
         { name: 'remove', idx: 0, count: 1 },
         { name: 'insert', idx: 0, count: 1 },
     ], "Throw away all existing entries");
     t.deepEqual(d.headers(), sequence(6, 6), "Headers now 6...6 (max adjusted to match min)");
 
-    fp = new FakeParams(4, 6);
+    fp = new FakeParams([{ name: 'min', value: 4, min: 0 }, { name: 'max', value: 6, min: 100 }]);
     t.deepEqual(d.update(fp, fp.target(0, 'min')), [
         { name: 'insert', idx: 0, count: 2 },
     ], "Throw away all existing entries");
     t.deepEqual(d.headers(), sequence(4, 6), "Headers now 4..6");
 
-    fp = new FakeParams(4, 6);
+    fp = new FakeParams([{ name: 'min', value: 4, min: 0 }, { name: 'max', value: 6, min: 100 }]);
     t.deepEqual(d.update(fp, 'not-a-target'), [
     ], "Nothing to do");
     t.deepEqual(d.headers(), sequence(4, 6), "Headers still 4..6");
@@ -199,7 +197,7 @@ test('Dimension:YearDimension', function (t) {
     ].join("\n"), "Spinners use start/end year titles");
     t.deepEqual(d.dataProperties(), new Array(2051 - 1900).fill({}), "No data properties set");
 
-    fp = new FakeParams(1900, 2000);
+    fp = new FakeParams([{ name: 'min', value: 1900, min: 0 }, { name: 'max', value: 2000, min: 100 }]);
     t.deepEqual(d.update(fp, fp.target(0, 'max')), [
         { name: 'remove', idx: 101, count: 50 },
     ], "Can modify like a RangeDimension");
@@ -220,7 +218,7 @@ test('Dimension:BinsDimension', function (t) {
     ].join("\n"), "Min spinner hidden");
     t.deepEqual(d.dataProperties(), new Array(10).fill({}), "No data properties set");
 
-    fp = new FakeParams(1, 15);
+    fp = new FakeParams([{ name: 'min', value: 1, min: 0 }, { name: 'max', value: 15, min: 100 }]);
     t.deepEqual(d.update(fp, fp.target(0, 'max')), [
         { name: 'insert', idx: 10, count: 5 },
     ], "Can modify like a RangeDimension");
