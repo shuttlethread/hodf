@@ -84,6 +84,74 @@ test('Dimension:SingleDimension', function (t) {
     t.end();
 });
 
+test('Dimension:OptionalDimension', function (t) {
+    var d, fp;
+
+    d = new Dimension([
+        {type: "optional", name: 'l0' },
+        {type: "optional", name: 'l1', enabled: false, content: [1, 2] },
+        {type: "optional", name: 'l2', enabled: true },
+        {type: "range", name: 'r', min: 0, max: 2},
+    ]);
+
+    t.deepEqual(d.headers(), ['l2', '1', '2'], "Only explictly enabled headings are availaable initially");
+    t.deepEqual(d.headerHTML('en'), ['<span>l2</span>', '1', '2'], "HTML matches");
+
+    t.deepEqual(d.parameterHtml(), [
+        '<span><label><input type="checkbox" name="enabled"  /><span>l0</span></label>',
+        '</span><span><label><input type="checkbox" name="enabled"  /><span>l1</span></label>',
+        '</span><span><label><input type="checkbox" name="enabled" checked="checked" /><span>l2</span></label>',
+        '</span><span><label>Min: <input type="number" name="min" min="1" max="100" step="1" value="1" /></label>',
+        '<label>Max: <input type="number" name="max" min="1" max="100" step="1" value="2" /></label></span>',
+    ].join("\n"), "Checkboxes for each optional property");
+
+    d.update_init([]);
+    t.deepEqual(d.headers(), ['1', '2'], "All optional headers off");
+    t.deepEqual(d.dataProperties(), [
+        {},
+        {},
+    ], "No data properties");
+
+    d.update_init(['l0', '4', '5', '6']);
+    t.deepEqual(d.headers(), ['l0', '4', '5', '6'], "l0 on, range afterwards also updated");
+
+    d.update_init(['l1', 'l2', '1', '2']);
+    t.deepEqual(d.headers(), ['l1', 'l2', '1', '2'], "1, 2 on");
+    t.deepEqual(d.dataProperties(), [
+        { type: 'dropdown', source: [1, 2] },
+        {},
+        {},
+        {},
+    ], "l1 has Data properties");
+
+    fp = new FakeParams(
+        [{ name: 'enabled', checked: false}],
+        [{ name: 'enabled', checked: true}],
+        [{ name: 'enabled', checked: false}],
+        [{ name: 'min', value: 1 }, { name: 'max', value: 3 }]
+    );
+    t.deepEqual(d.update(fp, fp.target(0, 'enabled')), [
+        { name: 'remove', idx: 1, count: 1 },
+        { name: 'insert', idx: 3, count: 1 },
+    ], "Turned l2 off, added one to range");
+    t.deepEqual(d.headers(), ['l1', '1', '2', '3'], "Headers match");
+
+    fp = new FakeParams(
+        [{ name: 'enabled', checked: true}],
+        [{ name: 'enabled', checked: true}],
+        [{ name: 'enabled', checked: true}],
+        [{ name: 'min', value: 1 }, { name: 'max', value: 3 }]
+    );
+    t.deepEqual(d.update(fp, fp.target(0, 'enabled')), [
+        { name: 'insert', idx: 0, count: 1 },
+        { name: 'insert', idx: 2, count: 1 },
+    ], "Turned l0, l3 on");
+    t.deepEqual(d.headers(), ['l0', 'l1', 'l2', '1', '2', '3'], "Headers match");
+
+    t.end();
+});
+
+
 test('Dimension:RangeDimension', function (t) {
     var d, fp;
 

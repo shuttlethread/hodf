@@ -75,6 +75,15 @@ The title can contain translations, e.g:
     {"name": "item_2", "title": {'en': 'Item 2', 'ge': 'ნივთი 2'}},
 ```
 
+### Optional dimension
+
+A single dimension that the user can turn on/off. "Enabled" specifies whether
+it's on by default. For example:
+
+```json
+    {"type": "optional", "name": "width", "title": "Width", "enabled": true},
+```
+
 ### Range dimension
 
 The columns/rows will be a range of numeric values, for which users get to

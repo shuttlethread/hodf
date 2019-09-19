@@ -109,6 +109,22 @@ var templates = [
         }
     },
 
+    {
+        "title": "Optional dimensions",
+        "fields": [
+            { "type": "optional", "name": "carrots", "title": "Carrots" },
+            { "type": "optional", "name": "parsnips", "title": "Parsnips" },
+        ],
+        "values": [
+            {"name": "fridge"},
+            {"name": "larder"},
+        ],
+        "init_data": {
+            "_headings": { fields: ["carrots"], values: ["fridge", "larder"] },
+            "carrots": [1, 2],
+        }
+    },
+
 ];
 
 // Inject the handsontable CSS into the page
