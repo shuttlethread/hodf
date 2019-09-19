@@ -42,7 +42,10 @@ function FakeParams(min, max) {
 }
 
 test('Dimension:SingleDimension', function (t) {
-    var d;
+    var d, fp;
+
+    d = new Dimension({name: 'l0'});
+    t.deepEqual(d.headers(), ['l0'], "Arrays are optional for single items");
 
     d = new Dimension([
         {name: 'l0'},
@@ -75,6 +78,10 @@ test('Dimension:SingleDimension', function (t) {
     t.deepEqual(d.headers(), ['l0', 'l1', 'l2'], "update_init() does nothing");
     d.update_init(['l0', 'l2', 'l3', 'l99']);
     t.deepEqual(d.headers(), ['l0', 'l1', 'l2'], "update_init() does nothing");
+
+    fp = new FakeParams(10, 17);
+    t.deepEqual(d.update(fp, fp.target(0, 'max')), [], "update() returns no actions");
+    t.deepEqual(d.headers(), ['l0', 'l1', 'l2'], "Headers still the same post update()");
 
     t.end();
 });
@@ -160,6 +167,65 @@ test('Dimension:RangeDimension', function (t) {
     ], "Throw away all existing entries");
     t.deepEqual(d.headers(), sequence(5, 5), "Headers now 5...5 (min adjusted to match max)");
 
+    fp = new FakeParams(6, 5);
+    t.deepEqual(d.update(fp, fp.target(0, 'min')), [
+        { name: 'remove', idx: 0, count: 1 },
+        { name: 'insert', idx: 0, count: 1 },
+    ], "Throw away all existing entries");
+    t.deepEqual(d.headers(), sequence(6, 6), "Headers now 6...6 (max adjusted to match min)");
+
+    fp = new FakeParams(4, 6);
+    t.deepEqual(d.update(fp, fp.target(0, 'min')), [
+        { name: 'insert', idx: 0, count: 2 },
+    ], "Throw away all existing entries");
+    t.deepEqual(d.headers(), sequence(4, 6), "Headers now 4..6");
+
+    fp = new FakeParams(4, 6);
+    t.deepEqual(d.update(fp, 'not-a-target'), [
+    ], "Nothing to do");
+    t.deepEqual(d.headers(), sequence(4, 6), "Headers still 4..6");
+
+    t.end();
+});
+
+test('Dimension:YearDimension', function (t) {
+    var d, fp;
+
+    d = new Dimension([{ type: 'year' }]);
+    t.deepEqual(d.headers(), sequence(1900, 2050), "Default is 1900..2050");
+    t.deepEqual(d.parameterHtml(), [
+        '<span><label><span lang="en">Start year</span>: <input type="number" name="min" min="1900" max="2050" step="1" value="1900" /></label>',
+        '<label><span lang="en">End year</span>: <input type="number" name="max" min="1900" max="2050" step="1" value="2050" /></label></span>',
+    ].join("\n"), "Spinners use start/end year titles");
+    t.deepEqual(d.dataProperties(), new Array(2051 - 1900).fill({}), "No data properties set");
+
+    fp = new FakeParams(1900, 2000);
+    t.deepEqual(d.update(fp, fp.target(0, 'max')), [
+        { name: 'remove', idx: 101, count: 50 },
+    ], "Can modify like a RangeDimension");
+    t.deepEqual(d.headers(), sequence(1900, 2000), "Range updated");
+
+    t.end();
+});
+
+
+test('Dimension:BinsDimension', function (t) {
+    var d, fp;
+
+    d = new Dimension([{ type: 'bins', max: '10' }]);
+    t.deepEqual(d.headers(), sequence(1, 10), "Default is 1..10");
+    t.deepEqual(d.parameterHtml(), [
+        '<span><input type="hidden" name="min" value="1" />',
+        '<label>Max: <input type="number" name="max" min="1" max="1000" step="1" value="10" /></label></span>',
+    ].join("\n"), "Min spinner hidden");
+    t.deepEqual(d.dataProperties(), new Array(10).fill({}), "No data properties set");
+
+    fp = new FakeParams(1, 15);
+    t.deepEqual(d.update(fp, fp.target(0, 'max')), [
+        { name: 'insert', idx: 10, count: 5 },
+    ], "Can modify like a RangeDimension");
+    t.deepEqual(d.headers(), sequence(1, 15), "Range updated");
+
     t.end();
 });
 
@@ -172,6 +238,7 @@ test('Dimension:to_hot_properties', function (t) {
 
     t.deepEqual(thp("numeric"), { type: 'numeric', allowInvalid: false }, "Numeric");
     t.deepEqual(thp([1, 2]), { type: 'dropdown', source: [1, 2] }, "Vocab");
+    t.deepEqual(thp({type: "custom_plugin", moo: "yes"}), {type: "custom_plugin", moo: "yes"}, "Pass through anything else");
 
     t.end();
 });
