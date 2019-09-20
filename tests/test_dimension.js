@@ -98,11 +98,14 @@ test('Dimension:OptionalDimension', function (t) {
     t.deepEqual(d.headerHTML('en'), ['<span>l2</span>', '1', '2'], "HTML matches");
 
     t.deepEqual(d.parameterHtml(), [
-        '<span><label><input type="checkbox" name="enabled"  /><span>l0</span></label>',
-        '</span><span><label><input type="checkbox" name="enabled"  /><span>l1</span></label>',
-        '</span><span><label><input type="checkbox" name="enabled" checked="checked" /><span>l2</span></label>',
-        '</span><span><label>Min: <input type="number" name="min" min="1" max="100" step="1" value="1" /></label>',
-        '<label>Max: <input type="number" name="max" min="1" max="100" step="1" value="2" /></label></span>',
+        '<span><label><input type="checkbox" name="enabled"  /><span>l0</span></label>&nbsp;',
+        '</span><span><label><input type="checkbox" name="enabled"  /><span>l1</span></label>&nbsp;',
+        '</span><span><label><input type="checkbox" name="enabled" checked="checked" /><span>l2</span></label>&nbsp;',
+        '</span><span><label><span>Range</span>: ',
+        '<input type="number" name="min" min="1" max="100" step="1" value="1" />',
+        '…',
+        '<input type="number" name="max" min="1" max="100" step="1" value="2" />',
+        '</label>&nbsp;</span>',
     ].join("\n"), "Checkboxes for each optional property");
 
     d.update_init([]);
@@ -159,8 +162,11 @@ test('Dimension:RangeDimension', function (t) {
     t.deepEqual(d.headers(), sequence(1, 100), "Default to 1..100");
     t.deepEqual(d.headerHTML(), sequence(1, 100), "Titles same as headers (no prefix)");
     t.deepEqual(d.parameterHtml(), [
-        '<span><label>Min: <input type="number" name="min" min="1" max="100" step="1" value="1" /></label>',
-        '<label>Max: <input type="number" name="max" min="1" max="100" step="1" value="100" /></label></span>',
+        '<span><label><span>Range</span>: ',
+        '<input type="number" name="min" min="1" max="100" step="1" value="1" />',
+        '…',
+        '<input type="number" name="max" min="1" max="100" step="1" value="100" />',
+        '</label>&nbsp;</span>',
     ].join("\n"), "2 spinners for min/max");
     t.deepEqual(d.dataProperties(), new Array(100).fill({}), "No data properties set");
 
@@ -168,8 +174,11 @@ test('Dimension:RangeDimension', function (t) {
     t.deepEqual(d.headers(), ['15', '16', '17'], "Default to 15..17");
     t.deepEqual(d.headerHTML(), ['15', '16', '17'], "Titles same as headers (no prefix)");
     t.deepEqual(d.parameterHtml(), [
-        '<span><label>Min: <input type="number" name="min" min="10" max="20" step="1" value="15" /></label>',
-        '<label>Max: <input type="number" name="max" min="10" max="20" step="1" value="17" /></label></span>',
+        '<span><label><span>Range</span>: ',
+        '<input type="number" name="min" min="10" max="20" step="1" value="15" />',
+        '…',
+        '<input type="number" name="max" min="10" max="20" step="1" value="17" />',
+        '</label>&nbsp;</span>',
     ].join("\n"), "2 spinners for min/max, populated with overall settings");
     t.deepEqual(d.dataProperties(), new Array(3).fill({}), "No data properties set");
 
@@ -194,8 +203,11 @@ test('Dimension:RangeDimension', function (t) {
         '<span lang="ge">ნივთი </span>17',
     ], "Headings get translated title prefix (ge)");
     t.deepEqual(d.parameterHtml(), [
-        '<span><label><span lang="en">Item </span>Min: <input type="number" name="min" min="10" max="20" step="1" value="15" /></label>',
-        '<label><span lang="en">Item </span>Max: <input type="number" name="max" min="10" max="20" step="1" value="17" /></label></span>',
+        '<span><label><span lang="en">Item </span>: ',
+        '<input type="number" name="min" min="10" max="20" step="1" value="15" />',
+        '…',
+        '<input type="number" name="max" min="10" max="20" step="1" value="17" />',
+        '</label>&nbsp;</span>',
     ].join("\n"), "2 spinners for min/max, populated with overall settings");
     t.deepEqual(d.dataProperties(), new Array(3).fill({ type: 'dropdown', source: [1, 2] }), "All data properties match");
 
@@ -260,8 +272,11 @@ test('Dimension:YearDimension', function (t) {
     d = new Dimension([{ type: 'year' }]);
     t.deepEqual(d.headers(), sequence(1900, 2050), "Default is 1900..2050");
     t.deepEqual(d.parameterHtml(), [
-        '<span><label><span lang="en">Start year</span>: <input type="number" name="min" min="1900" max="2050" step="1" value="1900" /></label>',
-        '<label><span lang="en">End year</span>: <input type="number" name="max" min="1900" max="2050" step="1" value="2050" /></label></span>',
+        '<span><label><span lang="en">Years</span>: ',
+        '<input type="number" name="min" min="1900" max="2050" step="1" value="1900" />',
+        '…',
+        '<input type="number" name="max" min="1900" max="2050" step="1" value="2050" />',
+        '</label>&nbsp;</span>',
     ].join("\n"), "Spinners use start/end year titles");
     t.deepEqual(d.dataProperties(), new Array(2051 - 1900).fill({}), "No data properties set");
 
@@ -281,8 +296,10 @@ test('Dimension:BinsDimension', function (t) {
     d = new Dimension([{ type: 'bins', max: '10' }]);
     t.deepEqual(d.headers(), sequence(1, 10), "Default is 1..10");
     t.deepEqual(d.parameterHtml(), [
-        '<span><input type="hidden" name="min" value="1" />',
-        '<label>Max: <input type="number" name="max" min="1" max="1000" step="1" value="10" /></label></span>',
+        '<span><label><span>Bin </span><span>Total</span>: ',
+        '<input type="hidden" name="min" value="1" />',
+        '<input type="number" name="max" min="1" max="1000" step="1" value="10" />',
+        '</label>&nbsp;</span>',
     ].join("\n"), "Min spinner hidden");
     t.deepEqual(d.dataProperties(), new Array(10).fill({}), "No data properties set");
 
@@ -291,6 +308,22 @@ test('Dimension:BinsDimension', function (t) {
         { name: 'insert', idx: 10, count: 5 },
     ], "Can modify like a RangeDimension");
     t.deepEqual(d.headers(), sequence(1, 15), "Range updated");
+
+    d = new Dimension([{ type: 'bins', max: '10', prefix: {name: "camel", title: 'Camel '}}]);
+    t.deepEqual(d.parameterHtml(), [
+        '<span><label><span>Camel </span><span>Total</span>: ',
+        '<input type="hidden" name="min" value="1" />',
+        '<input type="number" name="max" min="1" max="1000" step="1" value="10" />',
+        '</label>&nbsp;</span>',
+    ].join("\n"), "Can customise paramter title with prefix");
+
+    d = new Dimension([{ type: 'bins', max: '10', prefix: 'camel'}]);
+    t.deepEqual(d.parameterHtml(), [
+        '<span><label><span>camel</span><span>Total</span>: ',
+        '<input type="hidden" name="min" value="1" />',
+        '<input type="number" name="max" min="1" max="1000" step="1" value="10" />',
+        '</label>&nbsp;</span>',
+    ].join("\n"), "Can customise paramter title with prefix");
 
     t.end();
 });
