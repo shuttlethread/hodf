@@ -107,6 +107,18 @@ Special case of range dimension. Users select start/end instead of min/max.
 {"type": "year", "min": 2000, "max": 2010}
 ```
 
+### Timeseries dimension
+
+As well as selecting a year range, you can select a period:
+
+```json
+{"type": "timeseries", "min": 2000, "max": 2010, "allowed_periods": ['monthly', 'bi-annual']}
+```
+
+Accepts all range dimension options, plus...
+
+* ``allowed_periods``: Periods to offer user, an array containing some of 'yearly', 'bi-annual', 'quarterly', 'monthly', or '*' for all (the default).
+
 ### Bins dimension
 
 Special case of range dimension. Min is hard-coded to 1.
