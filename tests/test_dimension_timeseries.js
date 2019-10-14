@@ -24,9 +24,9 @@ test('TimeSeriesDimension', function (t) {
         '…',
         '<input type="number" name="max" min="1990" max="1995" step="1" value="1995" />',
         '<select name="period">',
-        '<option value="12" selected="selected"><span>Yearly</span></option>',
-        '<option value="6_12"><span>Bi-annual</span></option>',
-        '<option value="3_6_9_12"><span>Quarterly</span></option>',
+        '<option value="1" selected="selected"><span>Yearly</span></option>',
+        '<option value="1_7"><span>Bi-annual</span></option>',
+        '<option value="1_4_7_10"><span>Quarterly</span></option>',
         '<option value="1_2_3_4_5_6_7_8_9_10_11_12"><span>Monthly</span></option>',
         '</select>',
         '</label>&nbsp;</span>',
@@ -50,38 +50,38 @@ test('TimeSeriesDimension', function (t) {
         '…',
         '<input type="number" name="max" min="1990" max="1992" step="1" value="1992" />',
         '<select name="period">',
-        '<option value="3_6_9_12" selected="selected"><span>Quarterly</span></option>',
+        '<option value="1_4_7_10" selected="selected"><span>Quarterly</span></option>',
         '<option value="1_2_3_4_5_6_7_8_9_10_11_12"><span>Monthly</span></option>',
         '</select>',
         '</label>&nbsp;</span>',
     ].join("\n"), "2 spinners for min/max, dropdown only contains allowed periods, selects first by default");
     t.deepEqual(d.headers(), [
-        '1990_3',
-        '1990_6',
-        '1990_9',
-        '1990_12',
-        '1991_3',
-        '1991_6',
-        '1991_9',
-        '1991_12',
-        '1992_3',
-        '1992_6',
-        '1992_9',
-        '1992_12',
+        '1990_1',
+        '1990_4',
+        '1990_7',
+        '1990_10',
+        '1991_1',
+        '1991_4',
+        '1991_7',
+        '1991_10',
+        '1992_1',
+        '1992_4',
+        '1992_7',
+        '1992_10',
     ], "Header range gets quarterly postfix");
     t.deepEqual(d.headerHTML(), [
-        '1990 3',
-        '1990 6',
-        '1990 9',
-        '1990 12',
-        '1991 3',
-        '1991 6',
-        '1991 9',
-        '1991 12',
-        '1992 3',
-        '1992 6',
-        '1992 9',
-        '1992 12',
+        '1990 1',
+        '1990 4',
+        '1990 7',
+        '1990 10',
+        '1991 1',
+        '1991 4',
+        '1991 7',
+        '1991 10',
+        '1992 1',
+        '1992 4',
+        '1992 7',
+        '1992 10',
     ], "Header HTML range gets quarterly postfix");
 
     t.end();
@@ -104,25 +104,25 @@ test('TimeSeriesDimension:update_init', function (t) {
         '…',
         '<input type="number" name="max" min="1900" max="2050" step="1" value="1998" />',
         '<select name="period">',
-        '<option value="12" selected="selected"><span>Yearly</span></option>',
-        '<option value="6_12"><span>Bi-annual</span></option>',
-        '<option value="3_6_9_12"><span>Quarterly</span></option>',
+        '<option value="1" selected="selected"><span>Yearly</span></option>',
+        '<option value="1_7"><span>Bi-annual</span></option>',
+        '<option value="1_4_7_10"><span>Quarterly</span></option>',
         '<option value="1_2_3_4_5_6_7_8_9_10_11_12"><span>Monthly</span></option>',
         '</select>',
         '</label>&nbsp;</span>',
     ].join("\n"), "Spinners, dropdown updated");
 
-    d.update_init(['1997_6', '1997_12', '1998_6', '1998_12']);
-    t.deepEqual(d.headers(), ['1997_6', '1997_12', '1998_6', '1998_12'], "update_init() sets range");
+    d.update_init(['1997_1', '1997_7', '1998_1', '1998_7']);
+    t.deepEqual(d.headers(), ['1997_1', '1997_7', '1998_1', '1998_7'], "update_init() sets range");
     t.deepEqual(d.parameterHtml(), [
         '<span><label><span lang="en">Years</span>: ',
         '<input type="number" name="min" min="1900" max="2050" step="1" value="1997" />',
         '…',
         '<input type="number" name="max" min="1900" max="2050" step="1" value="1998" />',
         '<select name="period">',
-        '<option value="12"><span>Yearly</span></option>',
-        '<option value="6_12" selected="selected"><span>Bi-annual</span></option>',
-        '<option value="3_6_9_12"><span>Quarterly</span></option>',
+        '<option value="1"><span>Yearly</span></option>',
+        '<option value="1_7" selected="selected"><span>Bi-annual</span></option>',
+        '<option value="1_4_7_10"><span>Quarterly</span></option>',
         '<option value="1_2_3_4_5_6_7_8_9_10_11_12"><span>Monthly</span></option>',
         '</select>',
         '</label>&nbsp;</span>',
@@ -151,13 +151,13 @@ test('TimeSeriesDimension:update', function (t) {
     fp = new FakeParams([
         { name: 'min', value: 1995, min: 0 },
         { name: 'max', value: 1996, min: 100 },
-        { name: 'period', options: [{selected: true, value: '3_6_9_12'}] },
+        { name: 'period', options: [{selected: true, value: '1_4_7_10'}] },
     ]);
     t.deepEqual(d.update(fp, fp.target(0, 'max')), [
         { name: 'insert', idx: 1, count: 3 },
         { name: 'insert', idx: 0, count: 3 }
     ], "3 more headers for each year");
-    t.deepEqual(d.headers(), ['1995_3', '1995_6', '1995_9', '1995_12', '1996_3', '1996_6', '1996_9', '1996_12'], "Headers now 1995..1996, quarterly");
+    t.deepEqual(d.headers(), ['1995_1', '1995_4', '1995_7', '1995_10', '1996_1', '1996_4', '1996_7', '1996_10'], "Headers now 1995..1996, quarterly");
 
     fp = new FakeParams([
         { name: 'min', value: 1995, min: 0 },
