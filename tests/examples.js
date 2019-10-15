@@ -138,10 +138,34 @@ fs.readFile(__dirname + '/../node_modules/handsontable/dist/handsontable.full.mi
     document.head.appendChild(css_el);
 });
 
+// Add language-handling CSS
+(function () {
+    var el;
+
+    el = document.createElement('style');
+    el.innerText = [
+        "html:lang(en) *[lang]:not(:lang(en)) { display: none; }",
+        "html:lang(es) *[lang]:not(:lang(es)) { display: none; }",
+        "html:lang(fr) *[lang]:not(:lang(fr)) { display: none; }",
+        "html *[lang].always-visible { display: inherit !important; }",
+    ].join("\n");
+    document.head.appendChild(el);
+
+    el = document.createElement('div');
+    el.innerHTML = [
+        "<a href=\"javascript:\" onclick=\"document.documentElement.lang = 'en'\">en</a>",
+        "<a href=\"javascript:\" onclick=\"document.documentElement.lang = 'es'\">es</a>",
+        "<a href=\"javascript:\" onclick=\"document.documentElement.lang = 'fr'\">fr</a>",
+    ].join("\n");
+    document.body.appendChild(el);
+
+    document.documentElement.lang = "en";
+}());
+
 // Turn each HODF into a template
 templates.map(function (tmpl) {
     var containing_el = document.createElement('DIV');
 
     document.body.appendChild(containing_el);
-    return new Hodataframe(tmpl, containing_el, tmpl.init_data);
+    return new Hodataframe(tmpl, containing_el, tmpl.init_data, '*');
 });
