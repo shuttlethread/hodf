@@ -98,12 +98,12 @@ var templates = [
         "title": "Year and bins dimensions",
         "fields": [{"name": "A"}, {"name": "B"}],
         "values": [
-            {"type": "year"},
-            {"type": "bins", "prefix": {"name": "bin_", "title": "Bin "}},
+            {"type": "timeseries", min: 1990, max: 1993},
+            {"type": "bins", "prefix": {"name": "bin_", "title": "Bin "}, max: 5},
         ],
         "orientation": "vertical",
         "init_data": {
-            "_headings": { fields: ["A", "B"], values: ["2001", "2002", "bin_1", "bin_2"] },
+            "_headings": { fields: ["A", "B"], values: ["2001_6", "2001_12", "bin_1", "bin_2"] },
             "A": [0, 1, 2, 3],
             "B": [0, 1, 2, 3],
         }
