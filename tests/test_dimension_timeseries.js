@@ -113,6 +113,19 @@ test('TimeSeriesDimension', function (t) {
         '</label>&nbsp;</span>',
     ].join("\n"), "Allowed periods restricts select box");
 
+    d = new Dimension([{ type: 'timeseries', min: 1990, max: 1992, delta: 12, allowed_periods: ['yearly'] }]);
+    t.deepEqual(d.parameterHtml(), [
+        '<span><label><span lang="en">Years</span>: ',
+        '<input type="number" name="min" min="1900" max="2050" step="1" value="1990" />',
+        '…',
+        '<input type="number" name="max" min="1900" max="2050" step="1" value="1992" />',
+        '</label>&nbsp;',
+        '',
+        '<label><span lang="en">Start Month</span>: ',
+        '<input type="number" name="start_month" min="1" max="12" step="1" value="1" />',
+        '</label>&nbsp;</span>',
+    ].join("\n"), "Only one allowed period gets rid of select box");
+
     d = new Dimension([{ type: 'timeseries', prefix: "pre_" }]);
     t.deepEqual(d.headers(), sequence(2000, 2010).map(function (x) { return "pre_" + x + "_1"; }), "Headers get prefix");
     t.deepEqual(d.headerHTML(), sequence(2000, 2010).map(function (x) { return "<span>pre_</span>" + x + " 1"; }), "Titles get prefix");
@@ -268,6 +281,16 @@ test('TimeSeriesDimension:update', function (t) {
     t.deepEqual(d.update(fp, fp.target(0, 'max')), [
         { name: 'insert', idx: 3, count: 2 }
     ], "Still works when start_month not available");
+
+    d = new Dimension([{ type: 'timeseries', min: 2000, max: 2002, allowed_periods: ['yearly'] }]);
+    fp = new FakeParams([
+        { name: 'min', value: "2000", min: 0 },
+        { name: 'max', value: "2004", min: 0 },
+        { name: 'start_month', value: "1", min: 1 },
+    ]);
+    t.deepEqual(d.update(fp, fp.target(0, 'max')), [
+        { name: 'insert', idx: 3, count: 2 }
+    ], "Still works when delta not available");
 
     t.end();
 });
