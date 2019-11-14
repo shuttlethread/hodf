@@ -108,6 +108,20 @@ var templates = [
             "B": [0, 1, 2, 3],
         }
     },
+    {
+        "title": "Year and bins dimensions, forced start month",
+        "fields": [{"name": "A"}, {"name": "B"}],
+        "values": [
+            {"type": "timeseries", min: 1990, max: 1993, start_month: 1},
+            {"type": "bins", "prefix": {"name": "bin_", "title": "Bin "}, max: 5},
+        ],
+        "orientation": "vertical",
+        "init_data": {
+            "_headings": { fields: ["A", "B"], values: ["2001_1", "2001_7", "bin_1", "bin_2"] },
+            "A": [0, 1, 2, 3],
+            "B": [0, 1, 2, 3],
+        }
+    },
 
     {
         "title": "Optional dimensions",

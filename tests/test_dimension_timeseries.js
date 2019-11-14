@@ -77,6 +77,7 @@ test('TimeSeriesDimension', function (t) {
 
     d = new Dimension([{ type: 'timeseries', min: 1990, max: 1992, start_month: 2, delta: 6 }]);
     t.deepEqual(d.headers(), ['1990_2', '1990_8', '1991_2', '1991_8', '1992_2', '1992_8'], "Bi-annual range");
+    t.deepEqual(d.headerHTML(), ['1990', '1990', '1991', '1991', '1992', '1992'], "Start month forced, so don't care about month");
     t.deepEqual(d.parameterHtml(), [
         '<span><label><span lang="en">Years</span>: ',
         '<input type="number" name="min" min="1900" max="2050" step="1" value="1990" />',
@@ -89,10 +90,8 @@ test('TimeSeriesDimension', function (t) {
         '<option value="3" lang="en">Quarterly</option>',
         '<option value="1" lang="en">Monthly</option>',
         '</select>',
-        '<label><span lang="en">Start Month</span>: ',
-        '<input type="number" name="start_month" min="1" max="12" step="1" value="2" />',
-        '</label>&nbsp;</span>',
-    ].join("\n"), "Switched to bi-annual, start at 2");
+        '</span>',
+    ].join("\n"), "Switched to bi-annual, forced start at 2");
 
     t.throws(function () {
         d = new Dimension([{ type: 'timeseries', min: 1990, max: 1992, start_month: 4, delta: 3 }]);
@@ -152,6 +151,10 @@ test('TimeSeriesDimension:update_init', function (t) {
 
     d.update_init(['1996_3', '1997_3', '1997_9', '1998_3', '1998_9']);
     t.deepEqual(dim_settings(d), [1996, 1998, 3, 6], "Missing entry didn't affect finding the smallest delta");
+
+    t.throws(function () {
+        d.update_init(['1997_1', '1997_6']);
+    }, "5", "Wonky delta noticed");
 
     d = new Dimension([
         { type: 'timeseries', min: 2000, max: 2002 },
@@ -255,6 +258,16 @@ test('TimeSeriesDimension:update', function (t) {
         { name: 'remove', idx: 1, count: 3 },
     ], "Back to yearly removes 3 entries for each year");
     t.deepEqual(dim_settings(d), [2000, 2002, 3, 12], "Back to yearly");
+
+    d = new Dimension([{ type: 'timeseries', min: 2000, max: 2002, start_month: 1 }]);
+    fp = new FakeParams([
+        { name: 'min', value: "2000", min: 0 },
+        { name: 'max', value: "2004", min: 0 },
+        { name: 'delta', options: [{selected: true, value: "12"}] },
+    ]);
+    t.deepEqual(d.update(fp, fp.target(0, 'max')), [
+        { name: 'insert', idx: 3, count: 2 }
+    ], "Still works when start_month not available");
 
     t.end();
 });
