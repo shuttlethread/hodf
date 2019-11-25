@@ -39,6 +39,31 @@ test('df_to_aofa', function (t) {
         [ null, null, null ],
     ], "Zeros are preserved");
 
+
+    t.deepEqual(hot_utils.df_to_aofa({
+        _headings: { fields: ['a', 'c'], values: [1, 2, 3, 4, 5] },
+        a: [11, 12, 13, 99, 99],
+        c: [21, 0, 23, 99, 99],
+    }, ['a', 'b', 'c'], [0, 1, 2, 3, 4], 'horizontal'), [
+        [ null, null, null ],
+        [   11, null,   21 ],
+        [   12, null,    0 ],
+        [   13, null,   23 ],
+        [   99, null,   99 ],
+    ], "Zeros are preserved");
+
+    t.deepEqual(hot_utils.df_to_aofa({
+        _headings: { fields: ['a', 'c'], values: [1, 2, 3, 4, 5] },
+        a: [11, 12],
+        c: [21, 22],
+    }, ['a', 'c'], [1, 2, 3, 4, 5], 'horizontal'), [
+        [   11,   21 ],
+        [   12,   22 ],
+        [ null, null ],
+        [ null, null ],
+        [ null, null ],
+    ], "Short data padded with nulls");
+
     t.end();
 });
 
