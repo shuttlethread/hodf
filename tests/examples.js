@@ -5,6 +5,19 @@ var fs = require('fs');
 
 var templates = [
     {
+        "title": "Year and bins dimensions",
+        "fields": [{"type": "bins", max: 10}],
+        "values": [
+            { name: "Min Length", title: "Min Length" },
+            { type: "year", min: 2000, max: 2000 },
+        ],
+        "init_data": {
+            "_headings": { fields: ["X1"], values: ["2001"] },
+            "X1": [99],
+        }
+    },
+
+    {
         "title": "Use of 'content' to control cell contents",
         "fields": [
             {"name": "country", "title": "Country", "content": [
@@ -104,8 +117,8 @@ var templates = [
         "orientation": "vertical",
         "init_data": {
             "_headings": { fields: ["A", "B"], values: ["2001_6", "2001_12", "bin_1", "bin_2"] },
-            "A": [0, 1, 2, 3],
-            "B": [0, 1, 2, 3],
+            "A": [0],
+            "B": [0],
         }
     },
     {
