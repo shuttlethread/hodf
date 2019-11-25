@@ -62,7 +62,10 @@ test('constructor', function (t) {
         rowHeaders: [ '<span>Min Length</span>', '2001' ],
         colHeaders: [ '1', '2', '3', '4', '5', '6', '7', '8', '9', '10' ],
         startRows: 2,
+        maxRows: 2,
         startCols: 10,
+        maxCols: 10,
+        fillHandle: { autoInsertRow: false },
         data: [
             [ null, null, null, null, null, null, null, null, null, null ],
             [ null, null, null, null, null, null, null, null, null, null ],
