@@ -5,7 +5,11 @@ var proxyquire = require('proxyquire').noCallThru();
 
 var Hodf = proxyquire('../lib/index.js', {
     handsontable: function (el, hotParams) {
-        return { el: el, hotParams: hotParams };
+        return {
+            el: el,
+            hotParams: hotParams,
+            destroy: function () { this.destroyed = true; },
+        };
     },
 });
 
@@ -23,6 +27,18 @@ function fake_el() {
         innerHTML: '',
         querySelector: function (selector) { return el_hash[selector]; },
     };
+}
+
+function matchAll(str, regexp_str) {
+    var match, regexp = new RegExp(regexp_str, 'g'), out = {};
+
+    match = regexp.exec(str);
+    while (match !== null) {
+        out[match[0]] = true;
+        match = regexp.exec(str);
+    }
+
+    return out;
 }
 
 test('constructor', function (t) {
@@ -53,6 +69,29 @@ test('constructor', function (t) {
         ],
         cells: hodf.hot.hotParams.cells,
     }, "Initial data headings didn't fit template, so fell back to defaults");
+
+    t.end();
+});
+
+test('replace', function (t) {
+    var hodf, new_hodf;
+
+    hodf = new Hodf({
+        "title": { en: "Year and bins dimensions", ge: "წელი და ურნების ზომები" },
+        "fields": [{"type": "bins", max: 10}],
+        "values": [
+            { name: "Min Length", title: "Min Length" },
+            { type: "year", min: 2000, max: 2000 },
+        ],
+    }, fake_el(), undefined, 'ge');
+    t.deepEqual(matchAll(hodf.el.innerHTML, '<h3 .*?</h3>'), {
+        '<h3 lang="ge">წელი და ურნების ზომები</h3>': true,
+    }, "Only georgian title present (intial_lang = ge)");
+
+    new_hodf = hodf.replace({ "_headings": { fields: ["1"], values: ["Min Length", "2001"] } });
+    t.deepEqual(matchAll(new_hodf.el.innerHTML, '<h3 .*?</h3>'), {
+        '<h3 lang="ge">წელი და ურნების ზომები</h3>': true,
+    }, "Only georgian title present after replace()");
 
     t.end();
 });
