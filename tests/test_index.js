@@ -196,3 +196,64 @@ test('replace', function (t) {
 
     t.end();
 });
+
+test('getDataFrame/getAofA', function (t) {
+    function fake_hot(fields, values, data, orientation) {
+        return {
+            hot: {
+                getData: function () { return data; },
+                customData: {
+                    fields: { headers: function () { return fields; } },
+                    values: { headers: function () { return values; } },
+                },
+            },
+            tmpl: { orientation: orientation },
+        };
+    }
+
+    t.deepEqual(Hodf.prototype.getDataFrame.call(fake_hot(
+        ['a', 'b'],
+        ['c', 'd'],
+        [[1, 2], [10, 20]],
+        'horizontal'
+    )), {
+        _headings: { fields: [ 'a', 'b' ], values: [ 'c', 'd' ] },
+        a: [ 1, 10 ],
+        b: [ 2, 20 ],
+    }, "getDataFrame horizontal");
+
+    t.deepEqual(Hodf.prototype.getDataFrame.call(fake_hot(
+        ['a', 'b'],  // NB: Fields/Values are pre-rotation, only the data rotates
+        ['c', 'd'],
+        [[1, 10], [2, 20]],
+        'vertical'
+    )), {
+        _headings: { fields: [ 'a', 'b' ], values: [ 'c', 'd' ] },
+        a: [  1, 10 ],
+        b: [  2, 20 ],
+    }, "getDataFrame vertical");
+
+    t.deepEqual(Hodf.prototype.getAofA.call(fake_hot(
+        ['a', 'b'],
+        ['c', 'd'],
+        [[1, 2], [10, 20]],
+        'horizontal'
+    )), [
+        [ null, 'a', 'b' ],
+        [  'c',  1,   2 ],
+        [  'd', 10,  20 ]
+    ], "getAofA horizontal");
+
+    t.deepEqual(Hodf.prototype.getAofA.call(fake_hot(
+        ['a', 'b'],  // NB: Fields/Values are pre-rotation, only the data rotates
+        ['c', 'd'],
+        [[1, 10], [2, 20]],
+        'vertical'
+    )), [
+        [ null, 'c', 'd' ],
+        [  'a',  1,  10 ],
+        [  'b',  2,  20 ]
+    ], "getAofA vertical");
+
+    t.end();
+});
