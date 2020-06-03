@@ -72,7 +72,7 @@ example:
 The title can contain translations, e.g:
 
 ```json
-    {"name": "item_2", "title": {'en': 'Item 2', 'ge': 'ნივთი 2'}},
+    {"name": "item_2", "title": {"en": "Item 2", "ge": "ნივთი 2"}},
 ```
 
 ### Optional dimension
@@ -112,7 +112,7 @@ Special case of range dimension. Users select start/end instead of min/max.
 As well as selecting a year range, you can select a period:
 
 ```json
-{"type": "timeseries", "min": 2000, "max": 2010, "allowed_periods": ['monthly', 'bi-annual']}
+{"type": "timeseries", "min": 2000, "max": 2010, "allowed_periods": ["monthly", "bi-annual"]}
 ```
 
 Accepts all range dimension options, plus...
