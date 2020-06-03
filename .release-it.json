@@ -1,0 +1,8 @@
+{
+  "git": {
+    "changelog": "npx auto-changelog --stdout --commit-limit false -u --ignore-commit-pattern='^.gitignore|^README|^package.json'"
+  },
+  "hooks": {
+    "after:bump": "npx auto-changelog -p --ignore-commit-pattern='^.gitignore|^README|^package.json'"
+  }
+}
