@@ -1,6 +1,6 @@
 {
   "name": "hodf",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Hands-on-dataframe: Handsontable wrapper to make data.frame widget",
   "files": [
     "lib/*.js"
